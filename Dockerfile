@@ -15,7 +15,6 @@ USER $UID
 
 RUN git clone https://github.com/RuudBurger/CouchPotatoServer.git /couchpotato
 
-VOLUME ["/config"]
+VOLUME ["/config", "/media"]
 EXPOSE 5050
-
 CMD ["/start.sh"]
