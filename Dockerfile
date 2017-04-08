@@ -1,7 +1,7 @@
-FROM alpine:3.4
+FROM alpine:3.5
 MAINTAINER Adam Dodman <adam.dodman@gmx.com>
 
-ENV UID=745 UNAME=couchpotato GID=990 GNAME=media
+ENV UID=901 UNAME=couchpotato GID=900 GNAME=media
 
 ADD start.sh /start.sh
 
