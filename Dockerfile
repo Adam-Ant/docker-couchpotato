@@ -9,7 +9,7 @@ ADD start.sh /start.sh
 RUN chmod +x /start.sh \
  && apk add --no-cache tini su-exec python2 py2-openssl py2-lxml unrar tar git \
  && git clone https://github.com/CouchPotato/CouchPotatoServer.git /couchpotato
- #&& apk del --no-cache git
+ && apk del --no-cache git
 
 VOLUME ["/config", "/media"]
 EXPOSE 5050
