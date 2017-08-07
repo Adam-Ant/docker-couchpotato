@@ -1,20 +1,18 @@
 FROM alpine:3.6
 MAINTAINER Adam Dodman <adam.dodman@gmx.com>
 
-ENV UID=901 UNAME=couchpotato GID=900 GNAME=media
+ENV UID=901 GID=900
+WORKDIR /couchpotato
 
 ADD start.sh /start.sh
 
 RUN chmod +x /start.sh \
- && addgroup -g $GID $GNAME \
- && adduser -SH -u $UID -G $GNAME -s /usr/sbin/nologin $UNAME \
- && apk add --no-cache python unrar tar git \
- && mkdir /couchpotato && chown $UID:$GID /couchpotato
-
-USER $UID
-
-RUN git clone https://github.com/RuudBurger/CouchPotatoServer.git /couchpotato
+ && apk add --no-cache tini su-exec python2 py2-openssl py2-lxml unrar tar git \
+ && git clone https://github.com/CouchPotato/CouchPotatoServer.git /couchpotato
+ #&& apk del --no-cache git
 
 VOLUME ["/config", "/media"]
 EXPOSE 5050
+
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/start.sh"]

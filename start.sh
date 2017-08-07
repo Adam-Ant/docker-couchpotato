@@ -1,5 +1,6 @@
-#! /bin/sh
+#!/bin/sh
+set -e
 
-[ -n "$UMASK" ] && umask "$UMASK"
+chown -R $UID:$GID /config
 
-python2.7 /couchpotato/CouchPotato.py --console_log --data_dir=/config/couchpotato --config_file=/config/couchpotato/couchpotato.ini
+exec su-exec python /couchpotato/CouchPotato.py --console_log --data_dir=/config --config_file=/config/couchpotato.ini
