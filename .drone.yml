@@ -17,11 +17,11 @@ pipeline:
        - DOCKER_HOST=tcp://docker:2375
     commands:
       - apk add --no-cache curl
-      - docker run --name=DEV -d -p 5075:5075 --user=root devbuild # Need root for config
-      - sleep 10  # Wait for SickRage to start!
-      - docker logs DEV
-      - curl -sSL docker:5075  > /dev/null 
-      - docker kill DEV # Not really needed, but keeps things quick
+      - docker run --name=DEV -d -p 5050:5050 devbuild
+      - sleep 5 # Wait for CouchPotato to start!
+      - docker logs dev
+      - curl -sSL docker:5050 > /dev/null 
+      - docker kill dev # Not really needed, but keeps things quick
 
   publish:
     image: docker
@@ -29,12 +29,7 @@ pipeline:
     environment:
        - DOCKER_HOST=tcp://docker:2375
     commands:
-       - apk add --no-cache openssl jq
-       - export CURVER=$(wget -O- https://api.github.com/repos/theotherp/nzbhydra/releases/latest | jq -r .tag_name)
-         # Grab just the version, not the hash. Used for tagging
-       - echo $DOCKER_USER
-       - docker tag devbuild adamant/nzbhydra:latest
-       - docker tag devbuild adamant/nzbhydra:$CURVER
+       - docker tag devbuild adamant/couchpotato:latest
        - docker login -u $DOCKER_USER -p $DOCKER_PASS
-       - docker push adamant/nzbhydra
-       - echo "CONGRATS! SUCCESSFULLY BUILT SICKRAGE!"
+       - docker push adamant/couchpotato
+       - echo "CONGRATS! SUCCESSFULLY BUILT COUCHPOTATO!"
