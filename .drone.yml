@@ -17,7 +17,7 @@ pipeline:
        - DOCKER_HOST=tcp://docker:2375
     commands:
       - apk add --no-cache curl
-      - docker run --name=DEV -d -p 5050:5050 devbuild
+      - docker run --name=dev -d -p 5050:5050 devbuild
       - sleep 5 # Wait for CouchPotato to start!
       - docker logs dev
       - curl -sSL docker:5050 > /dev/null 
