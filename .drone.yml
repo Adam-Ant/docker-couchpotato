@@ -4,7 +4,7 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-       - docker build -t cp-dev . 
+       - docker build --pull --no-cache -t cp-dev . 
 
   test:
     image: docker
@@ -13,7 +13,7 @@ pipeline:
     commands:
       - apk add --no-cache curl
       - CON_NAME=$(docker run --rm -d -p 5050:5050 cp-dev)
-      - sleep 5 # Wait for CouchPotato to start!
+      - sleep 15 # Wait for CouchPotato to start!
       - docker logs $$CON_NAME
       - curl -sSL --max-time 3 --retry 5 --retry-delay 5 $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $$CON_NAME):5050 > /dev/null 
       - docker kill $$CON_NAME # Not really needed, but keeps things quick
