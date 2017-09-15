@@ -1,37 +1,33 @@
-services:
-  docker:
-    image: docker:dind
-    privileged: true
-
 pipeline:
   build:
     image: docker
-    environment:
-       - DOCKER_HOST=tcp://docker:2375
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     commands:
-       - docker build -t devbuild . 
+       - docker build -t cp-dev . 
 
   test:
     image: docker
-    environment:
-       - DOCKER_HOST=tcp://docker:2375
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - apk add --no-cache curl
-      - docker run --name=dev -d -p 5050:5050 devbuild
+      - CON_NAME=$(docker run --rm -d -p 5050:5050 cp-dev)
       - sleep 5 # Wait for CouchPotato to start!
-      - docker logs dev
-      - curl -sSL docker:5050 > /dev/null 
-      - docker kill dev # Not really needed, but keeps things quick
+      - docker logs $$CON_NAME
+      - curl -sSL --max-time 3 --retry 5 --retry-delay 5 $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $$CON_NAME):5050 > /dev/null 
+      - docker kill $$CON_NAME # Not really needed, but keeps things quick
 
   publish:
     image: docker
     secrets: [ DOCKER_USER, DOCKER_PASS ]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     when:
       event: [push, tag, deployment]
-    environment:
-       - DOCKER_HOST=tcp://docker:2375
     commands:
-       - docker tag devbuild adamant/couchpotato:latest
+       - docker tag cp-dev adamant/couchpotato:latest
        - docker login -u $DOCKER_USER -p $DOCKER_PASS
        - docker push adamant/couchpotato
+       - docker rmi cp-dev adamant/couchpotato
        - echo "CONGRATS! SUCCESSFULLY BUILT COUCHPOTATO!"
