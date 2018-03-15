@@ -1,3 +1,7 @@
+# Deprecated
+## Go use any other movie management tool. Seriously. How about [Spritsail/radarr](https://github.com/spritsail/radarr)?
+
+
 [hub]: https://hub.docker.com/r/adamant/couchpotato
 
 # [adamant/couchpotato][hub]
